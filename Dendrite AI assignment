@@ -1,0 +1,192 @@
+import json
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.feature_selection import SelectFromModel
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import mean_squared_error, r2_score
+import json
+
+# Open the JSON file
+with open('/content/algoparams_from_ui.json.rtf', 'r') as file:
+  json_string = file.read()
+  print(json_string)
+# Try to parse the JSON string
+try:
+    data = json.loads(json_string)  # Corrected this line
+except json.JSONDecodeError as e:
+    print("Error decoding JSON:", e)
+    # Handle the error appropriately, e.g., by providing a default value for data
+    data = {}
+# Access target information
+target_info = data.get('target', {})
+prediction_type = target_info.get('prediction_type')
+target_variable = target_info.get('target')
+regression_type = target_info.get('type')
+# Access hyperparameters if available
+hyperparameters = data.get('hyperparameters', {})
+# Print the extracted information
+print("Prediction Type:", prediction_type)
+print("Target Variable:", target_variable)
+print("Regression Type:", regression_type)
+print("Hyperparameters:", hyperparameters)
+# Determine the Machine Learning Steps
+def determine_ml_steps(prediction_type, target_variable, regression_type, hyperparameters):
+    ml_steps = []
+# Determine the Machine Learning Steps
+def determine_ml_steps(prediction_type, target_variable, regression_type, hyperparameters):
+    ml_steps = []
+
+    # Add feature handling step
+    ml_steps.append("Feature Handling")
+
+    # Add feature generation step if needed
+    # Example condition: If prediction_type is "Classification"
+    if prediction_type == "Classification":
+        ml_steps.append("Feature Generation")
+
+        # Add model building step
+    ml_steps.append("Model Building")
+
+    # Add hyperparameter tuning step if hyperparameters are provided
+    if hyperparameters:
+        ml_steps.append("Hyperparameter Tuning (Grid Search)")
+
+    return ml_steps
+
+# Extracted information from JSON
+prediction_type = "Regression"  # Example value, replace with extracted value
+target_variable = "petal_width"  # Example value, replace with extracted value
+regression_type = "regression"  # Example value, replace with extracted value
+hyperparameters = {"param1": '0.1', "param2": '10'}  # Example value, replace with extracted value
+
+# Determine machine learning steps
+ml_steps = determine_ml_steps(prediction_type, target_variable, regression_type, hyperparameters)
+
+# Print the sequence of machine learning steps
+print("Machine Learning Steps:")
+for step in ml_steps:
+    print("-", step)
+def load_and_preprocess_data(csv_file):
+ # Load dataset
+ data = pd.read_csv(csv_file)
+ # Handle missing values if any
+ data.dropna(inplace=True)
+ # Encode categorical variables if any
+ # Split data into features and target variable
+ X = data.drop(columns=[target_variable])
+ y = data[target_variable]
+ # Split data into train and test sets
+ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2,random_state=42)
+ # Perform feature scaling
+ scaler = StandardScaler()
+ X_train_scaled = scaler.fit_transform(X_train)
+ X_test_scaled = scaler.transform(X_test)
+ return X_train_scaled, X_test_scaled, y_train, y_test
+def feature_reduction(X_train, X_test, y_train, feature_reduction_method):
+  if feature_reduction_method == 'tree_based':
+    # Use RandomForestRegressor for feature selection
+    selector = SelectFromModel(RandomForestRegressor())
+    X_train_selected = selector.fit_transform(X_train, y_train)
+    X_test_selected = selector.transform(X_test)
+    return X_train_selected, X_test_selected
+  else:
+    return X_train, X_test # No feature reduction
+
+from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier
+from sklearn.svm import SVR, SVC
+from sklearn.neighbors import KNeighborsRegressor, KNeighborsClassifier
+from sklearn.linear_model import SGDRegressor, SGDClassifier
+from sklearn.ensemble import ExtraTreesRegressor, ExtraTreesClassifier
+from sklearn.neural_network import MLPRegressor, MLPClassifier
+from sklearn.kernel_ridge import KernelRidge
+from xgboost import XGBRegressor, XGBClassifier
+def create_models(selected_algorithms):
+ models = []
+ for algorithm in selected_algorithms:
+  if algorithm == 'LinearRegression':
+    models.append(('Linear Regression', LinearRegression()))
+  elif algorithm == 'LogisticRegression': 
+    models.append(('Logistic Regression', LogisticRegression()))
+  elif algorithm == 'RandomForestRegressor':
+    models.append(('Random Forest Regressor', RandomForestRegressor()))
+  elif algorithm == 'RandomForestClassifier':
+    models.append(('Random Forest Classifier', RandomForestClassifier()))
+  elif algorithm == 'GradientBoostingRegressor':
+    models.append(('Gradient Boosting Regressor', GradientBoostingRegressor()))
+  elif algorithm == 'GradientBoostingClassifier':
+    models.append(('Gradient Boosting Classifier', GradientBoostingClasifier()))
+  elif algorithm == 'DecisionTreeRegressor':
+    models.append(('Decision Tree Regressor', DecisionTreeRegressor()))
+  elif algorithm == 'DecisionTreeClassifier':
+    models.append(('Decision Tree Classifier', DecisionTreeClassifier()))
+  elif algorithm == 'SVR':
+    models.append(('Support Vector Regressor', SVR()))
+  elif algorithm == 'SVC':
+    models.append(('Support Vector Classifier', SVC()))
+  elif algorithm == 'KNeighborsRegressor':
+    models.append(('K Neighbors Regressor', KNeighborsRegressor()))
+  elif algorithm == 'KNeighborsClassifier':
+    models.append(('K Neighbors Classifier', KNeighborsClassifier()))
+  elif algorithm == 'SGDRegressor':
+    models.append(('Stochastic Gradient Descent Regressor', SGDRegressor()))
+  elif algorithm == 'SGDClassifier':
+    models.append(('Stochastic Gradient Descent Classifier', SGDClassifier()))
+  elif algorithm == 'ExtraTreesRegressor':
+    models.append(('Extra Trees Regressor', ExtraTreesRegressor()))
+  elif algorithm == 'ExtraTreesClassifier':
+    models.append(('Extra Trees Classifier', ExtraTreesClassifier()))
+  elif algorithm == 'MLPRegressor':
+    models.append(('Multi-layer Perceptron Regressor', MLPRegressor()))
+  elif algorithm == 'MLPClassifier':
+    models.append(('Multi-layer Perceptron Classifier', MLPClassifier()))
+  elif algorithm == 'KernelRidge':
+    models.append(('Kernel Ridge', KernelRidge()))
+  elif algorithm == 'XGBRegressor':
+    models.append(('XGBoost Regressor', XGBRegressor()))
+  elif algorithm == 'XGBClassifier':
+    models.append(('XGBoost Classifier', XGBClassifier()))
+ # Add more models as needed
+ return models  
+from sklearn.model_selection import GridSearchCV
+def hyperparameter_tuning(models, hyperparameters, X_train, y_train):
+  tuned_models = []
+  for name, model in models:
+    if name in hyperparameters:
+      param_grid = hyperparameters[name]
+      grid_search = GridSearchCV(model, param_grid, cv=5, scoring='neg_mean_squared_error')
+      grid_search.fit(X_train, y_train)
+      tuned_models.append((name, grid_search.best_estimator_))
+  else: 
+       tuned_models.append((name, model)) 
+  return tuned_models   
+def evaluate_models(models, X_test, y_test):
+  results = {}
+  for name, model in models:
+    y_pred = model.predict(X_test)
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+    results[name] = {'Mean Squared Error': mse, 'R-squared': r2}
+  return results
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
